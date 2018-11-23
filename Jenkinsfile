@@ -1,23 +1,17 @@
 node{
-   stage('SCM Checkout'){
-     git 'https://github.com/javahometech/my-app'
-   }
-   stage('Compile-Package'){
-      // Get maven home path
-      def mvnHome =  tool name: 'maven-3', type: 'maven'   
-      sh "${mvnHome}/bin/mvn package"
-   }
-   stage('Email Notification'){
-      mail bcc: '', body: '''Hi Welcome to jenkins email alerts
-      Thanks
-      Hari''', cc: '', from: '', replyTo: '', subject: 'Jenkins Job', to: 'hari.kammana@gmail.com'
-   }
-   stage('Slack Notification'){
-       slackSend baseUrl: 'https://hooks.slack.com/services/',
-       channel: '#jenkins-pipeline-demo',
-       color: 'good', 
-       message: 'Welcome to Jenkins, Slack!', 
-       teamDomain: 'javahomecloud',
-       tokenCredentialId: 'slack-demo'
-   }
+
+	stage ('Scm Checkout'){
+	git credentialsId: 'github', url: 'https://github.com/anoopgawande/javahometech_my-app.git '}
+	
+	stage ('Mvn Package'){
+	sh '/var/lib/jenkins/tools/hudson.tasks.Maven_MavenInstallation/maven-3/bin/mvn clean package'}
+
+	stage ('Build Docker Image'){
+	sh '/usr/bin/docker build -t agawande/my-app:$BUILD_NUMBER .'}
+	
+	stage ('Push Docker Image'){
+	withCredentials([usernamePassword(credentialsId: 'dockerhub', passwordVariable: 'dockerpwd', usernameVariable: 'dockeruser')]) {
+    sh "/usr/bin/docker login -u $dockeruser -p $dockerpwd"}
+	sh '/usr/bin/docker push agawande/my-app:$BUILD_NUMBER'
+	}
 }
