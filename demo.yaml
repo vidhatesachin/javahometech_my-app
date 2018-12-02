@@ -18,7 +18,7 @@ spec:
       - name: my-app
         image: vidhatesachintest/my-app:latest
         ports:
-        - containerPort: 80
+        - containerPort: 8080
         resources:
           requests:
             cpu: 250m
