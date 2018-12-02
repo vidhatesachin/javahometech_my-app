@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: my-app
-        image: agawande/my-app:latest
+        image: vidhatesachintest/my-app:latest
         ports:
         - containerPort: 80
         resources:
